@@ -1,2 +1,14 @@
 uvicorn
 fastapi
+git+https://github.com/huggingface/transformers.git#egg=transformers[agents]
+pandas 
+langchain-community 
+sentence-transformers 
+faiss-cpu 
+xmltodict 
+openai 
+langchain
+langchain-openai
+langchain-huggingface
+pyarrow==14.0.1
+torch
