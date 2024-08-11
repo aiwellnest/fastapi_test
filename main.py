@@ -149,44 +149,6 @@ async def run_agentic_rag(request: QuestionRequest):
     answer = get_answer_from_openai(question, enhanced_question)
     return {"answer": answer}
 
-# Endpoint to upload and process new PDFs
-@app.post("/upload-pdf/")
-async def upload_pdf(file: UploadFile = File(...)):
-    try:
-        # Save the uploaded file temporarily
-        file_path = f"temp_{file.filename}"
-        async with aiofiles.open(file_path, 'wb') as out_file:
-            content = await file.read()
-            await out_file.write(content)
-
-        # Read the PDF
-        reader = PdfReader(file_path)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text()
-
-        # Split the text into chunks
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=20)
-        docs = text_splitter.split_text(text)
-
-        # Convert to Document objects
-        document_objs = [Document(page_content=chunk) for chunk in docs]
-
-        # Embed and add to vector store
-        embedding_model = HuggingFaceEmbeddings(model_name="thenlper/gte-large")
-        embeddings = embedding_model.embed_documents([doc.page_content for doc in document_objs])
-        vectorstore.add_documents(documents=document_objs, embeddings=embeddings)
-
-        # Save the updated vectorstore
-        vectorstore.save_local(vectorstore_path)
-
-        # Clean up the temp file
-        os.remove(file_path)
-
-        return {"message": "PDF processed and added to the knowledge base successfully."}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 
 
