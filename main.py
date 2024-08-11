@@ -79,7 +79,6 @@ class QuestionRequest(BaseModel):
     history: Optional[List[HistoryItem]] = None
 
 # Initialize tools and agent safely
-@safe_execute
 def initialize_tools_and_agent(pubmed, vectorstore):
     retriever_tool = Tool(
         name="retriever",
