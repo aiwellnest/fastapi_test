@@ -143,11 +143,6 @@ def run_agentic_rag(request: QuestionRequest):
     answer = get_answer_from_openai(question, enhanced_question)
     return {"answer": answer}
 
-# Endpoint to handle chat requests
-@app.post("/chat/")
-async def quick_response(question: str):
-    result = run_agentic_rag(question, history=[])
-    return result
 
 # Endpoint to upload and process new PDFs
 @app.post("/upload-pdf/")
