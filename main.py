@@ -14,7 +14,7 @@ from langchain_community.vectorstores.utils import DistanceStrategy
 from tqdm import tqdm
 from transformers.agents import Tool, HfEngine, ReactJsonAgent
 from transformers.agents.llm_engine import MessageRole, get_clean_message_list
-from typing import List, Dict
+from typing import List, Dict, Optional
 from huggingface_hub import InferenceClient
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
