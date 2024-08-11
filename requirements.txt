@@ -12,3 +12,5 @@ langchain-openai
 langchain-huggingface
 pyarrow==14.0.1
 torch
+PyPDF2
+aiofiles
