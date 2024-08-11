@@ -25,10 +25,12 @@ app = FastAPI()
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
     
 # Define the path to save the vectorstore
-VECTORSTORE_PATH = "/faiss_index"  # Adjust this path to the correct location on your Render disk
+VECTORSTORE_PATH = "/faiss_index"
+
+# Global variable for vectorstore
+vectorstore = None
 
 # Load vectorstore at startup
 @app.on_event("startup")
@@ -70,10 +72,12 @@ class OpenAIEngine:
         )
         return response.choices[0].message.content
 
+# Define Model
 class HistoryItem(BaseModel):
     question: str
     answer: str
-
+    
+# Define Model
 class QuestionRequest(BaseModel):
     question: str
     history: Optional[List[HistoryItem]] = None
@@ -92,7 +96,10 @@ def initialize_tools_and_agent(pubmed, vectorstore):
     )
     return retriever_tool, pubmed_tool
 
-retriever_tool, pubmed_tool = initialize_tools_and_agent(pubmed, vectorstore)
+@app.on_event("startup")
+def initialize_tools():
+    global retriever_tool, pubmed_tool
+    retriever_tool, pubmed_tool = initialize_tools_and_agent(pubmed, vectorstore)
 
 def get_answer_from_openai(question, context):
     messages = [
@@ -104,7 +111,7 @@ def get_answer_from_openai(question, context):
     return result
 
 @app.post("/ask-question/")
-def run_agentic_rag(request: QuestionRequest):
+async def run_agentic_rag(request: QuestionRequest):
     question = request.question
     history = request.history or []
 
@@ -141,7 +148,6 @@ def run_agentic_rag(request: QuestionRequest):
     """
     answer = get_answer_from_openai(question, enhanced_question)
     return {"answer": answer}
-
 
 # Endpoint to upload and process new PDFs
 @app.post("/upload-pdf/")
